@@ -89,6 +89,190 @@ class UserAuthView(APIView):
             )
 
 
+class UserFollowView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    @swagger_auto_schema(
+        responses={
+            200: serializers.ResponseProfile(many=False)
+        },
+        tags=[
+            "User"
+        ],
+        operation_summary='Follow',
+        query_serializer=serializers.RequestUserFollowBlock
+    )
+    def post(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestUserFollowBlock(
+            data=request.data
+        )
+        if serializer.is_valid():
+            user = User.get_user(
+                username=serializer.validated_data['username']
+            )
+            if user:
+                User.follow_user(
+                    request.user,
+                    user
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        responses={
+            200: serializers.ResponseProfile(many=False)
+        },
+        tags=[
+            "User"
+        ],
+        operation_summary='Unfollow',
+        query_serializer=serializers.RequestUserFollowBlock
+    )
+    def delete(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestUserFollowBlock(
+            data=request.query_params
+        )
+        if serializer.is_valid():
+            user = User.get_user(
+                username=serializer.validated_data['username']
+            )
+            if user:
+                User.unfollow_user(
+                    request.user,
+                    user
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class UserBlockView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    @swagger_auto_schema(
+        responses={
+            200: serializers.ResponseProfile(many=False)
+        },
+        tags=[
+            "User"
+        ],
+        operation_summary='Block',
+        query_serializer=serializers.RequestUserFollowBlock
+    )
+    def post(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestUserFollowBlock(
+            data=request.data
+        )
+        if serializer.is_valid():
+            user = User.get_user(
+                username=serializer.validated_data['username']
+            )
+            if user:
+                User.block_user(
+                    request.user,
+                    user
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        responses={
+            200: serializers.ResponseProfile(many=False)
+        },
+        tags=[
+            "User"
+        ],
+        operation_summary='Unblock',
+        query_serializer=serializers.RequestUserFollowBlock
+    )
+    def delete(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestUserFollowBlock(
+            data=request.query_params
+        )
+        if serializer.is_valid():
+            user = User.get_user(
+                username=serializer.validated_data['username']
+            )
+            if user:
+                User.unblock_user(
+                    request.user,
+                    user
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 class UserItemView(APIView):
     permission_classes = [IsAuthenticated, ]
 

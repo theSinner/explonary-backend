@@ -17,6 +17,10 @@ class RequestUserItemGet(serializers.Serializer):
     username = serializers.CharField(required=True)
 
 
+class RequestUserFollowBlock(serializers.Serializer):
+    username = serializers.CharField(required=True)
+
+
 class RequestUserActivateRequestPost(serializers.Serializer):
     field = serializers.CharField(required=False, default='email')
 

@@ -44,3 +44,85 @@ class User(AbstractUser):
             user.fullname = data['fullname']
         user.save()
         return user
+
+
+class UserFollow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower_user'
+    )
+
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following_user'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+    @classmethod
+    def follow_user(cls, follower, following):
+        user_follow = UserFollow.objects.filter(
+            follower=follower,
+            following=following
+        ).first()
+        if not user_follow:
+            user_follow = UserFollow(
+                follower=follower,
+                following=following
+            )
+            user_follow.save()
+        return user_follow
+
+    @classmethod
+    def unfollow_user(cls, follower, following):
+        UserFollow.objects.filter(
+            follower=follower,
+            following=following
+        ).delete()
+        return True
+
+
+class UserBlock(models.Model):
+    blocker = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='blocker_user'
+    )
+
+    blocked = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='blocked_user'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+    @classmethod
+    def block_user(cls, blocker, blocked):
+        user_block = UserBlock.objects.filter(
+            blocker=blocker,
+            blocked=blocked
+        ).first()
+        if not user_block:
+            user_block = UserBlock(
+                blocker=blocker,
+                blocked=blocked
+            )
+            user_block.save()
+        return user_block
+
+    @classmethod
+    def unblock_user(cls, blocker, blocked):
+        UserBlock.objects.filter(
+            blocker=blocker,
+            blocked=blocked
+        ).delete()
+        return True

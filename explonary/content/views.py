@@ -16,7 +16,7 @@ class WordListView(APIView):
             200: serializers.ResponseWord(many=True)
         },
         tags=[
-            "Content"
+            "Word"
         ],
         operation_summary='Word List',
         query_serializer=serializers.RequestWordListGet
@@ -53,7 +53,7 @@ class WordItemView(APIView):
             200: serializers.ResponseWord(many=True)
         },
         tags=[
-            "Content"
+            "Word"
         ],
         operation_summary='Word Item',
         query_serializer=serializers.RequestWordItemGet
@@ -92,7 +92,7 @@ class WordAddView(APIView):
             200: serializers.ResponseWord(many=False)
         },
         tags=[
-            "Content"
+            "Word"
         ],
         operation_summary='Add Word',
         query_serializer=serializers.RequestWordAddPost
@@ -132,7 +132,7 @@ class TagListView(APIView):
             200: serializers.ResponseTag(many=True)
         },
         tags=[
-            "Content"
+            "Tag"
         ],
         operation_summary='Tag List',
     )
@@ -155,7 +155,7 @@ class LanguageListView(APIView):
             200: serializers.ResponseTag(many=True)
         },
         tags=[
-            "Content"
+            "Language"
         ],
         operation_summary='Language List',
     )
@@ -166,3 +166,89 @@ class LanguageListView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class TagFollowView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    @swagger_auto_schema(
+        tags=[
+            "Tag"
+        ],
+        operation_summary='Follow',
+        query_serializer=serializers.RequestTagFollow
+    )
+    def post(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestTagFollow(
+            data=request.data
+        )
+        if serializer.is_valid():
+            tag = Tag.get_tag(
+                name=serializer.validated_data['name']
+            )
+            if tag:
+                Tag.follow_tag(
+                    request.user,
+                    tag
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        tags=[
+            "Tag"
+        ],
+        operation_summary='Unfollow',
+        query_serializer=serializers.RequestTagFollow
+    )
+    def delete(self, request, version=1, *args, **kwargs):
+        serializer = serializers.RequestTagFollow(
+            data=request.query_params
+        )
+        if serializer.is_valid():
+            tag = Tag.get_tag(
+                name=serializer.validated_data['name']
+            )
+            if tag:
+                Tag.unfollow_tag(
+                    request.user,
+                    tag
+                )
+                return Response(
+                    {
+
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "The target user is not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    "message": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )

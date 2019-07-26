@@ -38,6 +38,47 @@ class Tag(models.Model):
         return tag
 
 
+class TagFollow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='tag_follow_user'
+    )
+
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        related_name='tag_follow_tag'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+    @classmethod
+    def follow_tag(cls, user, tag):
+        tag_follow = TagFollow.objects.filter(
+            user=user,
+            tag=tag
+        ).first()
+        if not tag_follow:
+            tag_follow = TagFollow(
+                user=user,
+                tag=tag
+            )
+            tag_follow.save()
+        return tag_follow
+
+    @classmethod
+    def unfollow_tag(cls, user, tag):
+        TagFollow.objects.filter(
+            user=user,
+            tag=tag
+        ).delete()
+        return True
+
+
 class Word(models.Model):
     text = models.CharField(max_length=500)
     description = models.CharField(max_length=2000, null=True, blank=True)

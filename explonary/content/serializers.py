@@ -19,6 +19,10 @@ class RequestWordItemGet(serializers.Serializer):
     random = serializers.IntegerField(required=True)
 
 
+class RequestTagFollow(serializers.Serializer):
+    name = serializers.CharField(required=True)
+
+
 class RequestWordAddPost(serializers.Serializer):
     text = serializers.CharField(required=True)
     description = serializers.CharField(required=False)

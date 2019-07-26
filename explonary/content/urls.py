@@ -24,6 +24,11 @@ urlpatterns = [
         name='tag_list'
     ),
     url(
+        'tag/follow',
+        views.TagFollowView.as_view(),
+        name='tag_follow'
+    ),
+    url(
         'language/list',
         views.LanguageListView.as_view(),
         name='language_list'
