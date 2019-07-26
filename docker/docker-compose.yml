@@ -16,7 +16,7 @@ services:
     image: "theSinner/explonary_backend:${STAGE}"
     container_name: explonary_backend_${STAGE}
     build:
-      context: ../..
+      context: ./..
       dockerfile: docker/Dockerfile
     command: /code/explonary/run_api.sh
     environment:
@@ -56,10 +56,10 @@ services:
           - node.role == manager
 
   celery:
-    image: dr.systemnegar.ir/explonary/explonary_backend:${STAGE}
+    image: "theSinner/explonary_backend:${STAGE}"
     container_name: explonary_backend_${STAGE}
     build:
-      context: ../..
+      context: ./..
       dockerfile: docker/Dockerfile
     command: /code/explonary/run_celery.sh
     environment:
