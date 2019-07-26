@@ -1,0 +1,114 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:11.4-alpine
+    container_name: explonary_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  api:
+    image: theSinner/explonary_backend:${STAGE}
+    container_name: explonary_backend_${STAGE}
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    command: /code/explonary/run_api.sh
+    environment:
+      - PYTHONPATH=/code/explonary
+      - BASE_URL=https://${STAGE}.explonary.com
+      - MEDIA_URL=https://${STAGE}.explonary.com/media/
+      - DEBUG_VALUE=TRUE
+    volumes:
+      - storage:/storage
+    ports:
+      - target: 8000
+        published: ${PUBLISHED_PORT}
+        protocol: tcp
+        mode: ingress
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    container_name: explonary_redis
+    image: dr.systemnegar.ir/public/redis:5.0.5
+    command: redis-server
+    volumes:
+      - redis:/data
+    expose:
+      - 6379
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  celery:
+    image: dr.systemnegar.ir/explonary/explonary_backend:${STAGE}
+    container_name: explonary_backend_${STAGE}
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    command: /code/explonary/run_celery.sh
+    environment:
+      - PYTHONPATH=/code/explonary
+      - BASE_URL=https://${STAGE}.explonary.com
+      - MEDIA_URL=https://${STAGE}.explonary.com/media/
+      - DEBUG_VALUE=TRUE
+    volumes:
+      - celery_data:/code/celery_data
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  
+  celery_beat:
+    image: dr.systemnegar.ir/explonary/explonary_backend:${STAGE}
+    container_name: explonary_backend_${STAGE}
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    command: /code/explonary/run_beat.sh
+    environment:
+      - PYTHONPATH=/code/explonary
+      - BASE_URL=https://${STAGE}.explonary.com
+      - MEDIA_URL=https://${STAGE}.explonary.com/media/
+      - DEBUG_VALUE=TRUE
+    volumes:
+      - celery_beat_data:/code/celery_data
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  postgres_data:
+  redis:
+  api_data:
+  storage:
+  celery_data:
+  celery_beat_data:
