@@ -13,7 +13,6 @@ services:
         constraints:
           - node.role == manager
   api:
-    image: "theSinner/explonary_backend:${STAGE}"
     container_name: explonary_backend_${STAGE}
     build:
       context: ./..
@@ -56,7 +55,6 @@ services:
           - node.role == manager
 
   celery:
-    image: "theSinner/explonary_backend:${STAGE}"
     container_name: explonary_backend_${STAGE}
     build:
       context: ./..
