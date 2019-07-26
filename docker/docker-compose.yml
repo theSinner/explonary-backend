@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   db:
-    image: postgres:11.4-alpine
+    image: "postgres:11.4-alpine"
     container_name: explonary_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -13,7 +13,7 @@ services:
         constraints:
           - node.role == manager
   api:
-    image: theSinner/explonary_backend:${STAGE}
+    image: "theSinner/explonary_backend:${STAGE}"
     container_name: explonary_backend_${STAGE}
     build:
       context: ../..
@@ -44,7 +44,7 @@ services:
 
   redis:
     container_name: explonary_redis
-    image: dr.systemnegar.ir/public/redis:5.0.5
+    image: "redis:5.0.5"
     command: redis-server
     volumes:
       - redis:/data
