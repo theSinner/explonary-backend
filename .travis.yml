@@ -34,10 +34,7 @@ install:
   # Docker CFML Server Tests
   - cd docker
   - docker-compose build
-
-before_script:
-  # Startup the app
-  - curl http://localhost:8000/
+  - docker-compose push
 
 after_script:
   - docker-compose stop
