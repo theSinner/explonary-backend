@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /code/footimo
+cd /code/explonary
 ./manage.py makemigrations --check
